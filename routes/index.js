@@ -4,11 +4,26 @@
  */
 
 var passport = require('passport')
-  , utils = require('../utils');
+    ,utils = require('../utils')
+    ,LocalStrategy = require('passport-local').Strategy;
+
 
 /**
  * Expose routes
  */
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+      console.log(username);
+      console.log(password);
+      if (username) {
+        return done(null, username);
+      }
+      else {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+    }
+));
 
 module.exports = Routes;
 
@@ -75,6 +90,12 @@ function Routes (app) {
       })
     );
   }
+
+  app.get('/login',
+      passport.authenticate('local', { successRedirect: '/',
+        failureRedirect: '/login',
+        failureFlash: true })
+  );
 
   app.get('/logout', function(req, res){
     req.logout();
